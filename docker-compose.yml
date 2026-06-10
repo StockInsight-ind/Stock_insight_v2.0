@@ -8,19 +8,23 @@ services:
       dockerfile: Dockerfile
     container_name: stock-insight-frontend
     ports:
-      - "3000:3000"
+      - "5173:5173"
     depends_on:
       - api
-    environment:
-      - REACT_APP_API_URL=http://localhost:5000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
   api:
     build:
       context: ./stock-insight-api
       dockerfile: Dockerfile
     container_name: stock-insight-api
+    volumes:
+      - ./stock-insight-api:/app
+      - /app/node_modules
     ports:
-      - "5000:5000"
+      - "5001:5000"
     depends_on:
       - postgres
       - ai-service

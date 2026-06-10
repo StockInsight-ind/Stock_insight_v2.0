@@ -1,0 +1,38 @@
+# Node
+node_modules/
+
+# React
+frontend/build/
+frontend/dist/
+
+# Python
+**/__pycache__/
+**/*.pyc
+**/.venv/
+**/venv/
+
+# Environment Variables
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+postgres_data/
+
+# Coverage
+coverage/
+htmlcov/
+
+# Secrets
+*.pem
+*.key

@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stock-insight-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+
+  api:
+    build:
+      context: ./stock-insight-api
+      dockerfile: Dockerfile
+    container_name: stock-insight-api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - ai-service
+    environment:
+      - PORT=5000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=stockinsight
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - AI_SERVICE_URL=http://ai-service:8000
+
+  ai-service:
+    build:
+      context: ./stock-insight-ai
+      dockerfile: Dockerfile
+    container_name: stock-insight-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  postgres:
+    image: postgres:16
+    container_name: stock-insight-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: stockinsight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

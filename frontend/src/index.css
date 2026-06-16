@@ -1,31 +1,25 @@
-body {
+/* Global Styles */
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
-}
-
-form {
-  width: 400px;
-  margin: 80px auto;
-  padding: 30px;
-  background: white;
-  border-radius: 10px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
+  padding: 0;
   box-sizing: border-box;
 }
 
-button {
+html, body {
   width: 100%;
-  margin-top: 20px;
-  padding: 12px;
-  cursor: pointer;
+  height: 100%;
 }
 
-p {
-  margin-top: 15px;
+body {
+  font-family: "Inter", "DM Sans", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
 }

@@ -9,7 +9,9 @@ const register = async(req,res)=>{
             firstName,
             lastName,
             email,
-            password
+            password,
+            market,
+            stocks
         } = req.body;
 
         if(
@@ -18,7 +20,6 @@ const register = async(req,res)=>{
             !email ||
             !password
         ){
-
             return res.status(400).json({
                 message:"All fields required"
             });
@@ -29,7 +30,9 @@ const register = async(req,res)=>{
                 firstName,
                 lastName,
                 email,
-                password
+                password,
+                market,
+                stocks
             });
 
         res.status(201).json(user);

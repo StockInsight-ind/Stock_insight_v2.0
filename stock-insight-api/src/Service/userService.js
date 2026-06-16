@@ -9,7 +9,6 @@ const registerUser = async(user)=>{
         await userRepository.findByEmail(user.email);
 
     if(existingUser){
-
         throw new Error("Email already exists");
     }
 
@@ -18,7 +17,21 @@ const registerUser = async(user)=>{
 
     user.password = hashedPassword;
 
-    return await userRepository.createUser(user);
+    const createdUser =
+        await userRepository.createUser(user);
+
+    if(user.stocks && user.stocks.length > 0){
+
+        for(const stock of user.stocks){
+
+            await userRepository.addUserStock(
+                createdUser.id,
+                stock
+            );
+        }
+    }
+
+    return createdUser;
 };
 
 module.exports = {

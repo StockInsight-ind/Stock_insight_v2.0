@@ -1,34 +1,25 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 const SUGGESTED_STOCKS = ["RELIANCE", "INFY", "TCS", "WIPRO", "AAPL", "TSLA", "GOOGL", "MSFT", "AMZN", "META", "BTC", "ETH"];
 
 export default function StockTagInput({ stocks, onChange }) {
   const [input, setInput] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef(null);
 
-  useEffect(() => {
-    if (input.length > 0) {
-      const filtered = SUGGESTED_STOCKS.filter(
-        (stock) =>
-          stock.toUpperCase().includes(input.toUpperCase()) &&
-          !stocks.includes(stock.toUpperCase())
-      );
-      setSuggestions(filtered.slice(0, 4));
-      setShowSuggestions(true);
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
-  }, [input, stocks]);
+  const suggestions = input.length > 0
+    ? SUGGESTED_STOCKS.filter(
+      (stock) =>
+        stock.toUpperCase().includes(input.toUpperCase()) &&
+        !stocks.includes(stock.toUpperCase())
+    ).slice(0, 4)
+    : [];
 
   const handleAddStock = (stock) => {
     const upper = stock.toUpperCase();
     if (!stocks.includes(upper) && stocks.length < 3) {
       onChange([...stocks, upper]);
       setInput("");
-      setSuggestions([]);
       setShowSuggestions(false);
     }
   };
@@ -69,7 +60,10 @@ export default function StockTagInput({ stocks, onChange }) {
           ref={inputRef}
           type="text"
           value={input}
-          onChange={(e) => setInput(e.target.value.toUpperCase())}
+          onChange={(e) => {
+            setInput(e.target.value.toUpperCase());
+            setShowSuggestions(e.target.value.length > 0);
+          }}
           onKeyDown={handleKeyDown}
           onFocus={() => input && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}

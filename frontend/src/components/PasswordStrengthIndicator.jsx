@@ -7,7 +7,7 @@ export default function PasswordStrengthIndicator({ password }) {
     if (password.length >= 12) strength++;
     if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
     if (/\d/.test(password)) strength++;
-    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
     
     const levels = [
       { level: 0, text: "", color: "" },

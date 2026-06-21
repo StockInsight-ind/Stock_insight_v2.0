@@ -1,4 +1,4 @@
-const pool = require('./database_communication');
+const { pool } = require('./database_communication');
 
 const findByEmail = async(email)=>{
 

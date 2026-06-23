@@ -9,7 +9,9 @@ const register = async(req,res)=>{
             firstName,
             lastName,
             email,
-            password
+            password,
+            market,
+            stocks
         } = req.body;
 
         if(
@@ -18,7 +20,6 @@ const register = async(req,res)=>{
             !email ||
             !password
         ){
-
             return res.status(400).json({
                 message:"All fields required"
             });
@@ -29,7 +30,9 @@ const register = async(req,res)=>{
                 firstName,
                 lastName,
                 email,
-                password
+                password,
+                market,
+                stocks
             });
 
         res.status(201).json(user);
@@ -42,6 +45,51 @@ const register = async(req,res)=>{
     }
 };
 
+const login = async(req,res)=>{
+
+    try{
+
+        const {
+            email,
+            password
+        } = req.body;
+
+        if(!email || !password){
+
+            return res.status(400).json({
+                message:
+                "Email and password are required"
+            });
+        }
+
+        const result =
+            await userService.loginUser(
+                email,
+                password
+            );
+
+        return res.status(200).json(result);
+
+        }// catch(error){
+
+    //     return res.status(401).json({
+    //         message:error.message
+    //     });
+    // }
+
+
+    catch(error){
+
+    console.error("REGISTER ERROR:", error);
+
+    return res.status(400).json({
+        message:error.message,
+        error:error
+    });
+}
+};
+
 module.exports = {
-    register
+    register,
+    login
 };

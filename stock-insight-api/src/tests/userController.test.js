@@ -84,3 +84,81 @@ describe('User Controller - Register', () => {
         });
     });
 });
+
+const { login } = require('../Controller/userController');
+
+describe('User Controller - Login', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = { body: {} };
+
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+
+        jest.clearAllMocks();
+    });
+
+    test('should return 400 when email or password is missing', async () => {
+        req.body = {
+            email: 'john@example.com'
+        };
+
+        await login(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'Email and password are required'
+        });
+    });
+
+    test('should login successfully', async () => {
+        const loginResponse = {
+            token: 'jwt-token',
+            user: {
+                id: 1,
+                email: 'john@example.com'
+            }
+        };
+
+        req.body = {
+            email: 'john@example.com',
+            password: 'password123'
+        };
+
+        userService.loginUser.mockResolvedValue(loginResponse);
+
+        await login(req, res);
+
+        expect(userService.loginUser).toHaveBeenCalledWith(
+            'john@example.com',
+            'password123'
+        );
+
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(loginResponse);
+    });
+
+    test('should return 400 when login fails', async () => {
+        req.body = {
+            email: 'john@example.com',
+            password: 'wrong-password'
+        };
+
+        userService.loginUser.mockRejectedValue(
+            new Error('Invalid credentials')
+        );
+
+        await login(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith(
+            expect.objectContaining({
+                message: 'Invalid credentials'
+            })
+        );
+    });
+});

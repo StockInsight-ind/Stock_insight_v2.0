@@ -7,8 +7,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: stock-insight-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     ports:
       - "5173:5173"
+    command: npm run dev -- --host 0.0.0.0
     depends_on:
       - api
 
@@ -17,11 +21,15 @@ services:
       context: ./stock-insight-api
       dockerfile: Dockerfile
     container_name: stock-insight-api
+    volumes:
+      - ./stock-insight-api:/app
+      - /app/node_modules
     ports:
       - "5050:5050"
     depends_on:
       - postgres
       - ai-service
+    command: npm run dev
     environment:
       - PORT=5050
       - DB_HOST=postgres
@@ -36,11 +44,13 @@ services:
       context: ./stock-insight-ai
       dockerfile: Dockerfile
     container_name: stock-insight-ai
+    volumes:
+      - ./stock-insight-ai:/app
     ports:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
-
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
   postgres:
     image: postgres:16
     container_name: stock-insight-db

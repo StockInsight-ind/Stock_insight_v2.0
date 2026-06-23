@@ -21,17 +21,6 @@ const registerUser = async(user)=>{
     const createdUser =
         await userRepository.createUser(user);
 
-    if(user.stocks && user.stocks.length > 0){
-
-        for(const stock of user.stocks){
-
-            await userRepository.addUserStock(
-                createdUser.id,
-                stock
-            );
-        }
-    }
-
     return createdUser;
 };
 
@@ -71,8 +60,7 @@ const loginUser = async(email,password)=>{
             id:user.id,
             firstName:user.first_name,
             lastName:user.last_name,
-            email:user.email,
-            market:user.market
+            email:user.email
         }
     };
 };

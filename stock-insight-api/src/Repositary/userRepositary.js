@@ -15,41 +15,25 @@ const createUser = async(user)=>{
     const result = await pool.query(
         `
        INSERT INTO users
-(first_name,last_name,email,password,market)
+(first_name,last_name,email,password)
 
-VALUES($1,$2,$3,$4,$5)
+VALUES($1,$2,$3,$4)
 
-RETURNING id,first_name,last_name,email,market
+RETURNING id,first_name,last_name,email
         `,
-        
-                [
+        [
             user.firstName,
             user.lastName,
             user.email,
-            user.password,
-            user.market
-]
-        
+            user.password
+        ]
     );
 
     return result.rows[0];
 };
 
 
-const addUserStock = async(userId, stock)=>{
-
-    await pool.query(
-        `
-        INSERT INTO user_stocks
-        (user_id, stock_symbol)
-        VALUES($1,$2)
-        `,
-        [userId, stock]
-    );
-};
-
 module.exports = {
     findByEmail,
-    createUser,
-    addUserStock
+    createUser
 };

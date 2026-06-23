@@ -9,9 +9,7 @@ const register = async(req,res)=>{
             firstName,
             lastName,
             email,
-            password,
-            market,
-            stocks
+            password
         } = req.body;
 
         if(
@@ -30,9 +28,7 @@ const register = async(req,res)=>{
                 firstName,
                 lastName,
                 email,
-                password,
-                market,
-                stocks
+                password
             });
 
         res.status(201).json(user);

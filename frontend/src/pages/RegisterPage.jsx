@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { registerUser } from "../api/userApi";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
-import StockTagInput from "../components/StockTagInput";
 import logoUrl from "../assets/logo.png";
 
 export default function RegisterPage() {
@@ -12,8 +11,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    market: "",
-    stocks: [],
   });
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
@@ -52,13 +49,6 @@ export default function RegisterPage() {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-    if (!formData.market) {
-      newErrors.market = "Please select market";
-    }
-    const selectedStocks = formData.stocks.filter((stock) => stock.trim() !== "");
-    if (selectedStocks.length === 0) {
-      newErrors.stocks = "Please enter at least one stock";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -79,8 +69,6 @@ export default function RegisterPage() {
         lastName: formData.lastName,
         email: formData.email,
         password: formData.password,
-        market: formData.market,
-        stocks: formData.stocks.filter((stock) => stock.trim() !== ""),
       };
 
       await registerUser(payload);
@@ -222,34 +210,6 @@ export default function RegisterPage() {
               {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="market" className="floating-label">Primary Market</label>
-              <select
-                id="market"
-                name="market"
-                value={formData.market}
-                onChange={handleChange}
-                className={`market-select ${errors.market ? "input-error" : ""}`}
-              >
-                <option value="">Select your primary market</option>
-                <option value="India">India · NSE/BSE</option>
-                <option value="US">United States · NYSE/NASDAQ</option>
-                <option value="Australia">Australia · ASX</option>
-                <option value="Europe">Europe · FTSE/DAX</option>
-                <option value="Japan">Japan · Nikkei</option>
-                <option value="Global">Global Multi-Market</option>
-              </select>
-              {errors.market && <span className="error-text">{errors.market}</span>}
-            </div>
-
-            <div className="form-group">
-              <label className="floating-label">Watch Stocks</label>
-              <StockTagInput
-                stocks={formData.stocks}
-                onChange={(stocks) => setFormData((prev) => ({ ...prev, stocks }))}
-              />
-              {errors.stocks && <span className="error-text">{errors.stocks}</span>}
-            </div>
 
             <button type="submit" className="submit-button" disabled={loading}>
               {loading ? "Creating account..." : "Create account"}

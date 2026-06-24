@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserPreferences, saveUserPreferences } from "../api/userApi";
-import { searchStocks } from "../api/marketApi";
+import { searchStocks } from "../services/stockSearchService";
 
 const marketOptions = [
   { id: "usa", label: "USA", accent: "S&P 500" },
   { id: "india", label: "India", accent: "NIFTY 50" },
   { id: "australia", label: "Australia", accent: "ASX 200" },
-  { id: "europe", label: "Europe", accent: "FTSE 100" },
-  { id: "japan", label: "Japan", accent: "Nikkei 225" },
 ];
 
 function StockAutocomplete({
   marketId,
+  marketCode,
   marketLabel,
   selectedStocks,
   onAddStock,
@@ -38,7 +37,7 @@ function StockAutocomplete({
     const timer = window.setTimeout(async () => {
       try {
         setLoading(true);
-        const results = await searchStocks(query.trim());
+        const results = await searchStocks(query.trim(), marketCode);
 
         if (!active) {
           return;
@@ -66,7 +65,7 @@ function StockAutocomplete({
       active = false;
       window.clearTimeout(timer);
     };
-  }, [query, selectedStocks]);
+  }, [marketCode, query, selectedStocks]);
 
   const handleAddSuggestion = (suggestion) => {
     onAddStock(marketId, suggestion.symbol.toUpperCase());
@@ -90,7 +89,7 @@ function StockAutocomplete({
       <div className="stock-market-header">
         <div>
           <h4>{marketLabel}</h4>
-          <p>Pick only valid symbols for this market.</p>
+          <p>Pick valid symbols from the stock master service.</p>
         </div>
         <span className="market-search-badge">{loading ? "Searching..." : "Autocomplete"}</span>
       </div>
@@ -122,13 +121,13 @@ function StockAutocomplete({
           <div className="suggestions-dropdown" role="listbox">
             {suggestions.map((suggestion) => (
               <button
-                key={`${suggestion.symbol}-${suggestion.exchange}`}
+                key={suggestion.symbol}
                 type="button"
                 className="suggestion-item"
                 onClick={() => handleAddSuggestion(suggestion)}
               >
                 <strong>{suggestion.symbol}</strong>
-                <span>{suggestion.name}</span>
+                <span>{suggestion.company_name}</span>
               </button>
             ))}
           </div>
@@ -152,6 +151,15 @@ export default function QuestionnairePage() {
     let active = true;
 
     const hydratePreferences = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setMessage("Please log in to continue onboarding.");
+        setHydrating(false);
+        navigate("/login");
+        return;
+      }
+
       try {
         const preferences = await getUserPreferences();
 
@@ -159,7 +167,11 @@ export default function QuestionnairePage() {
           return;
         }
 
-        setSelectedMarkets(preferences.markets || []);
+        const savedMarkets = Array.isArray(preferences.markets)
+          ? preferences.markets.filter((marketId) => marketOptions.some((option) => option.id === marketId))
+          : [];
+
+        setSelectedMarkets(savedMarkets);
         setStocksByMarket(preferences.stocks || {});
       } catch (error) {
         if (active && error.response?.status !== 401) {
@@ -323,6 +335,7 @@ export default function QuestionnairePage() {
                 <StockAutocomplete
                   key={marketId}
                   marketId={marketId}
+                  marketCode={market?.id || "usa"}
                   marketLabel={market?.label || marketId}
                   selectedStocks={stocksByMarket[marketId] || []}
                   onAddStock={addStock}

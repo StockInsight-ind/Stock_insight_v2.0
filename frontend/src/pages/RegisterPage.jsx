@@ -216,7 +216,7 @@ export default function RegisterPage() {
             </button>
 
             <div className="signin-link">
-              Already have an account? <Link to="/login">Sign in</Link>
+              Already have an account? <Link to="/login">Sign inheleos</Link>
             </div>
           </form>
         </section>

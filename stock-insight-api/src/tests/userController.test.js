@@ -1,7 +1,12 @@
-const { register } = require('../Controller/userController');
-const userService = require('../Service/userService');
-
 jest.mock('../Service/userService');
+
+const {
+    register,
+    login,
+    getPreferences,
+    savePreferences
+} = require('../Controller/userController');
+const userService = require('../Service/userService');
 
 describe('User Controller - Register', () => {
     let req;
@@ -85,8 +90,6 @@ describe('User Controller - Register', () => {
     });
 });
 
-const { login } = require('../Controller/userController');
-
 describe('User Controller - Login', () => {
     let req;
     let res;
@@ -120,7 +123,8 @@ describe('User Controller - Login', () => {
             token: 'jwt-token',
             user: {
                 id: 1,
-                email: 'john@example.com'
+                email: 'john@example.com',
+                onboarding_completed: false
             }
         };
 
@@ -160,5 +164,96 @@ describe('User Controller - Login', () => {
                 message: 'Invalid credentials'
             })
         );
+    });
+});
+
+describe('User Controller - Preferences', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+        req = {
+            body: {},
+            user: {
+                userId: 45
+            }
+        };
+
+        res = {
+            status: jest.fn().mockReturnThis(),
+            json: jest.fn()
+        };
+
+        jest.clearAllMocks();
+    });
+
+    test('should return saved preferences for the authenticated user', async () => {
+        const mockPreferences = {
+            user: {
+                id: 45,
+                onboarding_completed: true
+            },
+            markets: ['usa', 'india'],
+            stocks: {
+                usa: ['TSLA', 'AAPL'],
+                india: ['TCS']
+            }
+        };
+
+        userService.getUserPreferences.mockResolvedValue(mockPreferences);
+
+        await getPreferences(req, res);
+
+        expect(userService.getUserPreferences).toHaveBeenCalledWith(45);
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(mockPreferences);
+    });
+
+    test('should save preferences and return updated data', async () => {
+        const mockPreferences = {
+            user: {
+                id: 45,
+                onboarding_completed: true
+            },
+            markets: ['usa'],
+            stocks: {
+                usa: ['TSLA']
+            }
+        };
+
+        req.body = {
+            markets: ['usa'],
+            stocks: {
+                usa: ['TSLA']
+            }
+        };
+
+        userService.saveUserPreferences.mockResolvedValue(mockPreferences);
+
+        await savePreferences(req, res);
+
+        expect(userService.saveUserPreferences).toHaveBeenCalledWith(45, {
+            markets: ['usa'],
+            stocks: {
+                usa: ['TSLA']
+            }
+        });
+        expect(res.status).toHaveBeenCalledWith(200);
+        expect(res.json).toHaveBeenCalledWith(mockPreferences);
+    });
+
+    test('should reject preference save without markets', async () => {
+        req.body = {
+            stocks: {
+                usa: ['TSLA']
+            }
+        };
+
+        await savePreferences(req, res);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+            message: 'At least one market is required'
+        });
     });
 });

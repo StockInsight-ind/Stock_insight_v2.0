@@ -1,10 +1,7 @@
-const userService =
-require('../Service/userService');
+const userService = require('../Service/userService');
 
-const register = async(req,res)=>{
-
-    try{
-
+const register = async (req, res) => {
+    try {
         const {
             firstName,
             lastName,
@@ -12,80 +9,89 @@ const register = async(req,res)=>{
             password
         } = req.body;
 
-        if(
-            !firstName ||
-            !lastName ||
-            !email ||
-            !password
-        ){
+        if (!firstName || !lastName || !email || !password) {
             return res.status(400).json({
-                message:"All fields required"
+                message: 'All fields required'
             });
         }
 
-        const user =
-            await userService.registerUser({
-                firstName,
-                lastName,
-                email,
-                password
-            });
+        const user = await userService.registerUser({
+            firstName,
+            lastName,
+            email,
+            password
+        });
 
         res.status(201).json(user);
-
-    }catch(error){
-
+    } catch (error) {
         res.status(400).json({
-            message:error.message
+            message: error.message
         });
     }
 };
 
-const login = async(req,res)=>{
-
-    try{
-
+const login = async (req, res) => {
+    try {
         const {
             email,
             password
         } = req.body;
 
-        if(!email || !password){
-
+        if (!email || !password) {
             return res.status(400).json({
-                message:
-                "Email and password are required"
+                message: 'Email and password are required'
             });
         }
 
-        const result =
-            await userService.loginUser(
-                email,
-                password
-            );
-
+        const result = await userService.loginUser(email, password);
         return res.status(200).json(result);
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message
+        });
+    }
+};
 
-        }// catch(error){
+const getPreferences = async (req, res) => {
+    try {
+        const preferences = await userService.getUserPreferences(req.user.userId);
+        return res.status(200).json(preferences);
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message
+        });
+    }
+};
 
-    //     return res.status(401).json({
-    //         message:error.message
-    //     });
-    // }
+const savePreferences = async (req, res) => {
+    try {
+        const { markets, stocks } = req.body;
 
+        if (!Array.isArray(markets) || markets.length === 0) {
+            return res.status(400).json({
+                message: 'At least one market is required'
+            });
+        }
 
-    catch(error){
+        const preferences = await userService.saveUserPreferences(
+            req.user.userId,
+            {
+                markets,
+                stocks: stocks || {}
+            }
+        );
 
-    console.error("REGISTER ERROR:", error);
-
-    return res.status(400).json({
-        message:error.message,
-        error:error
-    });
-}
+        return res.status(200).json(preferences);
+    } catch (error) {
+        return res.status(400).json({
+            message: error.message
+        });
+    }
 };
 
 module.exports = {
     register,
-    login
+    login,
+    getPreferences,
+    savePreferences
 };

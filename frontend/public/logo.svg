@@ -1,0 +1,49 @@
+<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+  <!-- Background circle -->
+  <defs>
+    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#22C55E;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer circle background -->
+  <circle cx="40" cy="40" r="38" fill="rgba(59, 130, 246, 0.1)" stroke="#3B82F6" stroke-width="1.5" opacity="0.3"/>
+  
+  <!-- Chart area -->
+  <g filter="url(#glow)">
+    <!-- Chart line 1 (uptrend) -->
+    <polyline
+      points="15,55 25,48 35,52 45,35 55,40 65,20 75,18"
+      fill="none"
+      stroke="url(#chartGradient)"
+      stroke-width="3"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+    
+    <!-- Data points -->
+    <circle cx="15" cy="55" r="2.5" fill="#3B82F6"/>
+    <circle cx="25" cy="48" r="2.5" fill="#3B82F6"/>
+    <circle cx="35" cy="52" r="2.5" fill="#3B82F6"/>
+    <circle cx="45" cy="35" r="2.5" fill="#22C55E"/>
+    <circle cx="55" cy="40" r="2.5" fill="#22C55E"/>
+    <circle cx="65" cy="20" r="2.5" fill="#22C55E"/>
+    <circle cx="75" cy="18" r="3" fill="#22C55E" opacity="0.8"/>
+    
+    <!-- Subtle grid lines -->
+    <line x1="10" y1="60" x2="78" y2="60" stroke="#E0E7FF" stroke-width="0.5" opacity="0.4"/>
+    <line x1="10" y1="45" x2="78" y2="45" stroke="#E0E7FF" stroke-width="0.5" opacity="0.4"/>
+    <line x1="10" y1="30" x2="78" y2="30" stroke="#E0E7FF" stroke-width="0.5" opacity="0.4"/>
+  </g>
+  
+  <!-- Accent elements -->
+  <circle cx="75" cy="18" r="5" fill="none" stroke="#22C55E" stroke-width="1.5" opacity="0.6"/>
+</svg>

@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: stock-insight-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host 0.0.0.0
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./stock-insight-api
+      dockerfile: Dockerfile
+    container_name: stock-insight-api
+    volumes:
+      - ./stock-insight-api:/app
+      - /app/node_modules
+    ports:
+      - "5050:5050"
+    depends_on:
+      - postgres
+      - ai-service
+    command: npm run dev
+    environment:
+      - PORT=5050
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=stockinsight
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - AI_SERVICE_URL=http://ai-service:8000
+
+  ai-service:
+    build:
+      context: ./stock-insight-ai
+      dockerfile: Dockerfile
+    container_name: stock-insight-ai
+    volumes:
+      - ./stock-insight-ai:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+  postgres:
+    image: postgres:16
+    container_name: stock-insight-db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: stockinsight
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

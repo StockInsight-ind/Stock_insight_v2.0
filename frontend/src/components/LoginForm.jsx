@@ -16,7 +16,11 @@ export default function LoginForm() {
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
       setMessage("Login Successful");
-      navigate("/dashboard");
+      if (result.user?.onboarding_completed) {
+        navigate("/dashboard");
+      } else {
+        navigate("/questionnaire");
+      }
     } catch (error) {
       setMessage(error.response?.data?.message || "Login Failed");
     }

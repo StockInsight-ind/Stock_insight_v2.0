@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { registerUser } from "../api/userApi";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser, registerUser } from "../api/userApi";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 import logoUrl from "../assets/logo.png";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -72,7 +73,15 @@ export default function RegisterPage() {
       };
 
       await registerUser(payload);
-      setMessage("Registration successful! You can now sign in.");
+      const loginResult = await loginUser({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      localStorage.setItem("token", loginResult.token);
+      localStorage.setItem("user", JSON.stringify(loginResult.user));
+      setMessage("Registration successful! Redirecting to onboarding...");
+      navigate("/questionnaire");
     } catch (error) {
       setMessage(error.response?.data?.message || "Registration failed. Please try again.");
     } finally {

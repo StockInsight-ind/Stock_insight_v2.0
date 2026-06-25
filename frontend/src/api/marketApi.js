@@ -8,3 +8,11 @@ export const getMarkets = async () => {
   const response = await API.get("/markets");
   return response.data;
 };
+
+export const searchStocks = async (query) => {
+  const response = await API.get("/markets/search", {
+    params: { q: query },
+  });
+
+  return response.data;
+};

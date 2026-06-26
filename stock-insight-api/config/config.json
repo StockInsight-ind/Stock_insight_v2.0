@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "stockinsight",
+    "host": "stock-insight-db",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "stockinsight_test",
+    "host": "stock-insight-db",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "postgres",
+    "database": "stockinsight_prod",
+    "host": "stock-insight-db",
+    "port": 5432,
+    "dialect": "postgres"
+  }
+}

@@ -22,26 +22,23 @@ function StockAutocomplete({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
+  const isQueryTooShort = query.trim().length < 2;
+
 useEffect(() => {
   let active = true;
 
-  const trimmed = query.trim();
-
-  // ✅ handle "too short query" state safely
-  if (trimmed.length < 2) {
+  if (isQueryTooShort) {
     setSuggestions([]);
     setLoading(false);
     setStatus("");
-    return () => {
-      active = false;
-    };
+    return;
   }
 
-  const timer = window.setTimeout(async () => {
+  const timer = setTimeout(async () => {
     try {
       setLoading(true);
 
-      const results = await searchStocks(trimmed, marketCode);
+      const results = await searchStocks(query.trim(), marketCode);
 
       if (!active) return;
 
@@ -54,9 +51,7 @@ useEffect(() => {
         .slice(0, 6);
 
       setSuggestions(filtered);
-      setStatus(
-        filtered.length ? "" : "No exact match found. Try a company name."
-      );
+      setStatus(filtered.length ? "" : "No exact match found.");
     } catch {
       if (active) {
         setSuggestions([]);
@@ -71,7 +66,7 @@ useEffect(() => {
     active = false;
     clearTimeout(timer);
   };
-}, [query, marketCode, selectedStocks]);
+}, [query, marketCode, selectedStocks, isQueryTooShort]);
 
   const handleAddSuggestion = (suggestion) => {
     onAddStock(marketId, suggestion.symbol.toUpperCase());

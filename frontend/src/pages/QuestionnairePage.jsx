@@ -25,13 +25,12 @@ function StockAutocomplete({
   useEffect(() => {
     let active = true;
 
-    if (query.trim().length < 2) {
+   if (query.trim().length < 2) {
       setSuggestions([]);
       setLoading(false);
       setStatus("");
-      return () => {
-        active = false;
-      };
+      active = false;
+      return;
     }
 
     const timer = window.setTimeout(async () => {
@@ -49,7 +48,7 @@ function StockAutocomplete({
 
         setSuggestions(filtered);
         setStatus(filtered.length ? "" : "No exact match found. Try a company name.");
-      } catch (error) {
+      } catch {
         if (active) {
           setSuggestions([]);
           setStatus("Stock search is temporarily unavailable.");
@@ -191,13 +190,11 @@ export default function QuestionnairePage() {
     };
   }, []);
 
-  useEffect(() => {
-    setStocksByMarket((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([marketId]) => selectedMarkets.includes(marketId))
-      )
-    );
-  }, [selectedMarkets]);
+  const filteredStocksByMarket = Object.fromEntries(
+  Object.entries(stocksByMarket).filter(([marketId]) =>
+    selectedMarkets.includes(marketId)
+  )
+);
 
   const toggleMarket = (marketId) => {
     setSelectedMarkets((previous) =>
@@ -242,7 +239,7 @@ export default function QuestionnairePage() {
     const payload = {
       markets: selectedMarkets,
       stocks: selectedMarkets.reduce((accumulator, marketId) => {
-        accumulator[marketId] = stocksByMarket[marketId] || [];
+        accumulator[marketId] = filteredStocksByMarket[marketId] || [];
         return accumulator;
       }, {}),
     };
@@ -337,7 +334,7 @@ export default function QuestionnairePage() {
                   marketId={marketId}
                   marketCode={market?.id || "usa"}
                   marketLabel={market?.label || marketId}
-                  selectedStocks={stocksByMarket[marketId] || []}
+                  selectedStocks={filteredStocksByMarket[marketId] || []}
                   onAddStock={addStock}
                   onRemoveStock={removeStock}
                 />

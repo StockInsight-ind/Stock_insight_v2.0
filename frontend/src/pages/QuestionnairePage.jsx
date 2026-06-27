@@ -22,49 +22,56 @@ function StockAutocomplete({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  useEffect(() => {
-    let active = true;
+useEffect(() => {
+  let active = true;
 
-   if (query.trim().length < 2) {
-      setSuggestions([]);
-      setLoading(false);
-      setStatus("");
-      active = false;
-      return;
-    }
+  const trimmed = query.trim();
 
-    const timer = window.setTimeout(async () => {
-      try {
-        setLoading(true);
-        const results = await searchStocks(query.trim(), marketCode);
-
-        if (!active) {
-          return;
-        }
-
-        const filtered = results
-          .filter((item) => item?.symbol && !selectedStocks.includes(item.symbol.toUpperCase()))
-          .slice(0, 6);
-
-        setSuggestions(filtered);
-        setStatus(filtered.length ? "" : "No exact match found. Try a company name.");
-      } catch {
-        if (active) {
-          setSuggestions([]);
-          setStatus("Stock search is temporarily unavailable.");
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
-      }
-    }, 250);
-
+  // ✅ handle "too short query" state safely
+  if (trimmed.length < 2) {
+    setSuggestions([]);
+    setLoading(false);
+    setStatus("");
     return () => {
       active = false;
-      window.clearTimeout(timer);
     };
-  }, [marketCode, query, selectedStocks]);
+  }
+
+  const timer = window.setTimeout(async () => {
+    try {
+      setLoading(true);
+
+      const results = await searchStocks(trimmed, marketCode);
+
+      if (!active) return;
+
+      const filtered = results
+        .filter(
+          (item) =>
+            item?.symbol &&
+            !selectedStocks.includes(item.symbol.toUpperCase())
+        )
+        .slice(0, 6);
+
+      setSuggestions(filtered);
+      setStatus(
+        filtered.length ? "" : "No exact match found. Try a company name."
+      );
+    } catch {
+      if (active) {
+        setSuggestions([]);
+        setStatus("Stock search is temporarily unavailable.");
+      }
+    } finally {
+      if (active) setLoading(false);
+    }
+  }, 250);
+
+  return () => {
+    active = false;
+    clearTimeout(timer);
+  };
+}, [query, marketCode, selectedStocks]);
 
   const handleAddSuggestion = (suggestion) => {
     onAddStock(marketId, suggestion.symbol.toUpperCase());

@@ -46,7 +46,7 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_DB: stockinsight
+          POSTGRES_DB: stockinsight_test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:

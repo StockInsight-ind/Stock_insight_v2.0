@@ -5,7 +5,7 @@ const {
     login,
     getPreferences,
     savePreferences
-} = require('../Controller/userController');
+} = require('../Controller/UserController');
 const userService = require('../Service/userService');
 
 describe('User Controller - Register', () => {

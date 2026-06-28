@@ -1,8 +1,8 @@
 const sequelize = require("../config/database");
 
-const User = require("./User")(sequelize);
-const UserMarket = require("./UserMarket")(sequelize);
-const UserStock = require("./UserStock")(sequelize);
+const User = require("./user")(sequelize);
+const UserMarket = require("./userMarket")(sequelize);
+const UserStock = require("./userStock")(sequelize);
 
 // Associations
 User.hasMany(UserMarket, {

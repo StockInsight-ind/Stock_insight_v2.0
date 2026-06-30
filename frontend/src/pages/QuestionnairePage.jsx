@@ -22,50 +22,51 @@ function StockAutocomplete({
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
 
-  useEffect(() => {
-    let active = true;
+  const isQueryTooShort = query.trim().length < 2;
 
-    if (query.trim().length < 2) {
-      setSuggestions([]);
-      setLoading(false);
-      setStatus("");
-      return () => {
-        active = false;
-      };
-    }
+useEffect(() => {
+  let active = true;
 
-    const timer = window.setTimeout(async () => {
-      try {
-        setLoading(true);
-        const results = await searchStocks(query.trim(), marketCode);
+  if (isQueryTooShort) {
+    setSuggestions([]);
+    setLoading(false);
+    setStatus("");
+    return;
+  }
 
-        if (!active) {
-          return;
-        }
+  const timer = setTimeout(async () => {
+    try {
+      setLoading(true);
 
-        const filtered = results
-          .filter((item) => item?.symbol && !selectedStocks.includes(item.symbol.toUpperCase()))
-          .slice(0, 6);
+      const results = await searchStocks(query.trim(), marketCode);
 
-        setSuggestions(filtered);
-        setStatus(filtered.length ? "" : "No exact match found. Try a company name.");
-      } catch (error) {
-        if (active) {
-          setSuggestions([]);
-          setStatus("Stock search is temporarily unavailable.");
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+      if (!active) return;
+
+      const filtered = results
+        .filter(
+          (item) =>
+            item?.symbol &&
+            !selectedStocks.includes(item.symbol.toUpperCase())
+        )
+        .slice(0, 6);
+
+      setSuggestions(filtered);
+      setStatus(filtered.length ? "" : "No exact match found.");
+    } catch {
+      if (active) {
+        setSuggestions([]);
+        setStatus("Stock search is temporarily unavailable.");
       }
-    }, 250);
+    } finally {
+      if (active) setLoading(false);
+    }
+  }, 250);
 
-    return () => {
-      active = false;
-      window.clearTimeout(timer);
-    };
-  }, [marketCode, query, selectedStocks]);
+  return () => {
+    active = false;
+    clearTimeout(timer);
+  };
+}, [query, marketCode, selectedStocks, isQueryTooShort]);
 
   const handleAddSuggestion = (suggestion) => {
     onAddStock(marketId, suggestion.symbol.toUpperCase());
@@ -191,13 +192,11 @@ export default function QuestionnairePage() {
     };
   }, []);
 
-  useEffect(() => {
-    setStocksByMarket((current) =>
-      Object.fromEntries(
-        Object.entries(current).filter(([marketId]) => selectedMarkets.includes(marketId))
-      )
-    );
-  }, [selectedMarkets]);
+  const filteredStocksByMarket = Object.fromEntries(
+  Object.entries(stocksByMarket).filter(([marketId]) =>
+    selectedMarkets.includes(marketId)
+  )
+);
 
   const toggleMarket = (marketId) => {
     setSelectedMarkets((previous) =>
@@ -242,7 +241,7 @@ export default function QuestionnairePage() {
     const payload = {
       markets: selectedMarkets,
       stocks: selectedMarkets.reduce((accumulator, marketId) => {
-        accumulator[marketId] = stocksByMarket[marketId] || [];
+        accumulator[marketId] = filteredStocksByMarket[marketId] || [];
         return accumulator;
       }, {}),
     };
@@ -337,7 +336,7 @@ export default function QuestionnairePage() {
                   marketId={marketId}
                   marketCode={market?.id || "usa"}
                   marketLabel={market?.label || marketId}
-                  selectedStocks={stocksByMarket[marketId] || []}
+                  selectedStocks={filteredStocksByMarket[marketId] || []}
                   onAddStock={addStock}
                   onRemoveStock={removeStock}
                 />

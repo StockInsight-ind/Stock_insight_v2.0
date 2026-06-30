@@ -1,12 +1,12 @@
-jest.mock('../Service/userService');
+jest.mock('../../Service/userService');
 
 const {
     register,
     login,
     getPreferences,
     savePreferences
-} = require('../Controller/userController');
-const userService = require('../Service/userService');
+} = require('../../Controller/UserController');
+const userService = require('../../Service/userService');
 
 describe('User Controller - Register', () => {
     let req;

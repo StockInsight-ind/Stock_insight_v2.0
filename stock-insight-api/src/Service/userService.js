@@ -1,47 +1,64 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const { pool } = require('../Repositary/database_communication');
-const userRepository = require('../Repositary/userRepositary');
+const {
+    sequelize,
+} = require("../models");
 
-const normalizeMarket = (market) => String(market || '').trim().toLowerCase();
+const userRepository = require("../Repository/userRepositary");
 
-const normalizeStock = (stock) => String(stock || '').trim().toUpperCase();
+const normalizeMarket = (market) =>
+    String(market || "").trim().toLowerCase();
+
+const normalizeStock = (stock) =>
+    String(stock || "").trim().toUpperCase();
+
+
+// -------------------------
+// REGISTER
+// -------------------------
 
 const registerUser = async (user) => {
     const existingUser = await userRepository.findByEmail(user.email);
 
     if (existingUser) {
-        throw new Error('Email already exists');
+        throw new Error("Email already exists");
     }
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    user.password = hashedPassword;
 
-    return userRepository.createUser(user);
+    return await userRepository.createUser({
+        ...user,
+        password: hashedPassword,
+    });
 };
+
+
+// -------------------------
+// LOGIN
+// -------------------------
 
 const loginUser = async (email, password) => {
     const user = await userRepository.findByEmail(email);
 
     if (!user) {
-        throw new Error('Invalid email or password');
+        throw new Error("Invalid email or password");
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-        throw new Error('Invalid email or password');
+        throw new Error("Invalid email or password");
     }
 
     const token = jwt.sign(
         {
             userId: user.id,
-            email: user.email
+            email: user.email,
         },
-        process.env.JWT_SECRET || 'stocksecret',
+        process.env.JWT_SECRET || "stocksecret",
         {
-            expiresIn: '24h'
+            expiresIn: "24h",
         }
     );
 
@@ -52,32 +69,42 @@ const loginUser = async (email, password) => {
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
-            onboarding_completed: Boolean(user.onboarding_completed)
-        }
+            onboarding_completed: Boolean(user.onboarding_completed),
+        },
     };
 };
 
+
+// -------------------------
+// GET PREFERENCES
+// -------------------------
+
 const getUserPreferences = async (userId) => {
-    return userRepository.getPreferencesByUserId(userId);
+    return await userRepository.getPreferencesByUserId(userId);
 };
+
+
+// -------------------------
+// SAVE PREFERENCES (TRANSACTION FIXED)
+// -------------------------
 
 const saveUserPreferences = async (userId, preferences) => {
     const markets = Array.isArray(preferences.markets)
         ? [...new Set(preferences.markets.map(normalizeMarket).filter(Boolean))]
         : [];
 
-    const stocks = preferences.stocks && typeof preferences.stocks === 'object'
-        ? preferences.stocks
-        : {};
+    const stocks =
+        preferences.stocks && typeof preferences.stocks === "object"
+            ? preferences.stocks
+            : {};
 
-    const client = await pool.connect();
+    const result = await sequelize.transaction(async (t) => {
+        // pass transaction to repository methods
 
-    try {
-        await client.query('BEGIN');
-        await userRepository.clearPreferences(client, userId);
+        await userRepository.clearPreferences(userId, { transaction: t });
 
         for (const market of markets) {
-            await userRepository.addUserMarket(client, userId, market);
+            await userRepository.addUserMarket(userId, market, { transaction: t });
         }
 
         for (const [market, symbols] of Object.entries(stocks)) {
@@ -87,29 +114,35 @@ const saveUserPreferences = async (userId, preferences) => {
             for (const symbol of marketSymbols) {
                 const normalizedSymbol = normalizeStock(symbol);
 
-                if (!normalizedMarket || !normalizedSymbol) {
-                    continue;
-                }
+                if (!normalizedMarket || !normalizedSymbol) continue;
 
-                await userRepository.addUserStock(client, userId, normalizedMarket, normalizedSymbol);
+                await userRepository.addUserStock(
+                    userId,
+                    normalizedMarket,
+                    normalizedSymbol,
+                    { transaction: t }
+                );
             }
         }
 
-        await userRepository.setOnboardingCompleted(client, userId, true);
-        await client.query('COMMIT');
+        await userRepository.setOnboardingCompleted(userId, true, {
+            transaction: t,
+        });
 
-        return userRepository.getPreferencesByUserId(userId);
-    } catch (error) {
-        await client.query('ROLLBACK');
-        throw error;
-    } finally {
-        client.release();
-    }
+        return await userRepository.getPreferencesByUserId(userId);
+    });
+
+    return result;
 };
+
+
+// -------------------------
+// EXPORTS
+// -------------------------
 
 module.exports = {
     registerUser,
     loginUser,
     getUserPreferences,
-    saveUserPreferences
+    saveUserPreferences,
 };

@@ -9,7 +9,7 @@ const SUPABASE_ANON_KEY =
 const marketCodeMap = {
   usa: "USA",
   india: "INDIA",
-  australia: "AUSTRALIA",
+  australia: "Australia",
   europe: "EUROPE",
   japan: "JAPAN",
 };

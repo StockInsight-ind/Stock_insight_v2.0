@@ -160,6 +160,9 @@ export default function DashboardPage() {
                 boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
               }}
             >
+
+                
+
               <div
                 style={{
                   display: "flex",
@@ -182,6 +185,10 @@ export default function DashboardPage() {
                 </h2>
               </div>
 
+
+
+              
+
               <h3
                 style={{
                   marginBottom: "10px",
@@ -201,6 +208,31 @@ export default function DashboardPage() {
             </div>
           ))}
         </div>
+
+
+        {/* My Stocks Card */}
+          <div
+            style={{
+              marginTop: "30px",
+              border: "1px solid #ddd",
+              borderRadius: "12px",
+              background: "#fff",
+              padding: "20px",
+              minHeight: "350px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+            }}
+          >
+            <h2
+              style={{
+                margin: 0,
+                marginBottom: "20px",
+              }}
+            >
+              My Stocks
+            </h2>
+
+            {/* Your stock cards will go here later */}
+          </div>
       </main>
     </div>
   );

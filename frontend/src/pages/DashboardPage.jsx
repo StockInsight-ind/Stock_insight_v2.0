@@ -1,19 +1,18 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUserPreferences } from "../api/userApi";
-
+import Sidebar from "../components/Sidebar";
 
 export default function DashboardPage() {
-
-
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-
-  const firstName = user.firstName;
- 
+  const firstName = user.firstName || "Investor";
 
   const navigate = useNavigate();
-
   const [selectedMarkets, setSelectedMarkets] = useState([]);
+  const [selectedMarket, setSelectedMarket] = useState("usa");
+  const [userStocks, setUserStocks] = useState({});
+
+  const stocksForSelectedMarket = userStocks[selectedMarket] || [];
 
   const marketCards = {
     usa: {
@@ -52,11 +51,15 @@ export default function DashboardPage() {
     const loadPreferences = async () => {
       try {
         const data = await getUserPreferences();
-
         console.log("Backend Response:", data);
 
-        if (data?.markets) {
+        if (Array.isArray(data?.markets) && data.markets.length > 0) {
           setSelectedMarkets(data.markets);
+          setSelectedMarket(data.markets[0]);
+        }
+
+        if (data?.stocks) {
+          setUserStocks(data.stocks);
         }
       } catch (error) {
         console.error("Error loading preferences:", error);
@@ -69,9 +72,13 @@ export default function DashboardPage() {
   const topRow =
     selectedMarkets.length > 0
       ? selectedMarkets
-          .map((marketId) => marketCards[marketId])
+          .map((marketId) =>
+            marketCards[marketId] ? { ...marketCards[marketId], id: marketId } : null
+          )
           .filter(Boolean)
-      : Object.values(marketCards).slice(0, 3);
+      : Object.entries(marketCards)
+          .slice(0, 3)
+          .map(([marketId, market]) => ({ ...market, id: marketId }));
 
   return (
     <div
@@ -80,58 +87,8 @@ export default function DashboardPage() {
         minHeight: "100vh",
       }}
     >
-      {/* Sidebar */}
-      <aside
-        style={{
-          width: "240px",
-          borderRight: "1px solid #ddd",
-          padding: "20px",
-        }}
-      >
-        <div
-          style={{
-            textAlign: "center",
-            marginBottom: "30px",
-          }}
-        >
-          <img
-            src="/logo.png"
-            alt="Stock Insights"
-            style={{
-              width: "70px",
-              height: "70px",
-            }}
-          />
+      <Sidebar />
 
-          <h2>Stock Insights</h2>
-        </div>
-
-        <nav
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-          }}
-        >
-          <button onClick={() => navigate("/dashboard")}>
-            Overview
-          </button>
-
-          <button onClick={() => navigate("/news-analysis")}>
-            News Analysis
-          </button>
-
-          <button onClick={() => navigate("/global-news")}>
-            Global News
-          </button>
-
-          <button onClick={() => navigate("/settings")}>
-            Settings
-          </button>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
       <main
         style={{
           flex: 1,
@@ -140,99 +97,84 @@ export default function DashboardPage() {
       >
         <h1>Welcome {firstName}</h1>
 
-        {/* Market Cards */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "20px",
-            marginTop: "25px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "16px",
+            marginBottom: "20px",
           }}
         >
-          {topRow.map((market) => (
-            <div
-              key={market.label}
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "12px",
-                padding: "20px",
-                background: "#fff",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-              }}
-            >
+          {topRow.map((market) => {
+            const isActive = selectedMarket === market.id;
 
-                
-
+            return (
               <div
+                key={market.id}
+                onClick={() => setSelectedMarket(market.id)}
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  marginBottom: "15px",
+                  border: isActive ? "2px solid #2563eb" : "1px solid #ddd",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  background: "#fff",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                  cursor: "pointer",
                 }}
               >
-                <span style={{ fontSize: "28px" }}>
-                  {market.emoji}
-                </span>
-
-                <h2
+                <div
                   style={{
-                    margin: 0,
-                    fontSize: "20px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    marginBottom: "15px",
                   }}
                 >
-                  {market.label}
-                </h2>
+                  <span style={{ fontSize: "28px" }}>{market.emoji}</span>
+                  <h2 style={{ margin: 0, fontSize: "20px" }}>{market.label}</h2>
+                </div>
+
+                <h3 style={{ marginBottom: "10px" }}>{market.index}</h3>
+                <p style={{ color: "#666", lineHeight: "1.5" }}>{market.description}</p>
               </div>
-
-
-
-              
-
-              <h3
-                style={{
-                  marginBottom: "10px",
-                }}
-              >
-                {market.index}
-              </h3>
-
-              <p
-                style={{
-                  color: "#666",
-                  lineHeight: "1.5",
-                }}
-              >
-                {market.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
+        <div
+          style={{
+            marginTop: "30px",
+            border: "1px solid #ddd",
+            borderRadius: "12px",
+            background: "#fff",
+            padding: "20px",
+            minHeight: "350px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+          }}
+        >
+          <h2 style={{ margin: 0, marginBottom: "20px" }}>My Stocks</h2>
+          <p style={{ marginTop: 0, marginBottom: "18px", color: "#374151" }}>
+            Showing stocks for {marketCards[selectedMarket]?.label || "USA"}
+          </p>
 
-        {/* My Stocks Card */}
-          <div
-            style={{
-              marginTop: "30px",
-              border: "1px solid #ddd",
-              borderRadius: "12px",
-              background: "#fff",
-              padding: "20px",
-              minHeight: "350px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-            }}
-          >
-            <h2
-              style={{
-                margin: 0,
-                marginBottom: "20px",
-              }}
-            >
-              My Stocks
-            </h2>
-
-            {/* Your stock cards will go here later */}
-          </div>
+          {stocksForSelectedMarket.length === 0 ? (
+            <p style={{ color: "#374151" }}>No stocks added for this market.</p>
+          ) : (
+            stocksForSelectedMarket.map((stock) => (
+              <div
+                key={stock}
+                style={{
+                  border: "1px solid #e5e7eb",
+                  background: "#f8fafc",
+                  padding: "12px",
+                  borderRadius: "8px",
+                  marginBottom: "12px",
+                }}
+              >
+                <h3 style={{ margin: 0, color: "#0f172a" }}>{stock}</h3>
+              </div>
+            ))
+          )}
+        </div>
       </main>
     </div>
   );

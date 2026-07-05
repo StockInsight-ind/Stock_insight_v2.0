@@ -7,7 +7,7 @@ export default function DashboardPage() {
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const firstName = user.firstName || "Investor";
 
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const [selectedMarkets, setSelectedMarkets] = useState([]);
   const [selectedMarket, setSelectedMarket] = useState("usa");
   const [userStocks, setUserStocks] = useState({});

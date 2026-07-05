@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 import { getUserPreferences } from "../api/userApi";
 import Sidebar from "../components/Sidebar";
 

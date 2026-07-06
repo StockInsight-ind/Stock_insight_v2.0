@@ -5,6 +5,8 @@ import json
 from urllib.parse import quote
 from data.global_events_or_news import RSS_FEEDS, TOPICS
 
+from data.news_filter import filter_articles
+
 
 # -----------------------------
 # Generate Google RSS URLs
@@ -62,8 +64,11 @@ async def get_global_news_feed():
         tasks = [fetch_feed(session, feed) for feed in RSS_FEEDS]
         results = await asyncio.gather(*tasks)
 
-    articles = []
+        articles = []
+
     for result in results:
         articles.extend(result)
 
-    return articles 
+    articles = filter_articles(articles)
+
+    return articles

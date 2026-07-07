@@ -148,49 +148,6 @@ export default function QuestionnairePage() {
   const [loading, setLoading] = useState(false);
   const [hydrating, setHydrating] = useState(true);
 
-  // useEffect(() => {
-  //   let active = true;
-
-  //   const hydratePreferences = async () => {
-  //     const token = localStorage.getItem("token");
-
-  //     if (!token) {
-  //       setMessage("Please log in to continue onboarding.");
-  //       setHydrating(false);
-  //       navigate("/login");
-  //       return;
-  //     }
-
-  //     try {
-  //       const preferences = await getUserPreferences();
-
-  //       if (!active || !preferences) {
-  //         return;
-  //       }
-
-  //       const savedMarkets = Array.isArray(preferences.markets)
-  //         ? preferences.markets.filter((marketId) => marketOptions.some((option) => option.id === marketId))
-  //         : [];
-
-  //       setSelectedMarkets(savedMarkets);
-  //       setStocksByMarket(preferences.stocks || {});
-  //     } catch (error) {
-  //       if (active && error.response?.status !== 401) {
-  //         setMessage(error.response?.data?.message || "Unable to load your saved preferences.");
-  //       }
-  //     } finally {
-  //       if (active) {
-  //         setHydrating(false);
-  //       }
-  //     }
-  //   };
-
-  //   hydratePreferences();
-
-  //   return () => {
-  //     active = false;
-  //   };
-  // }, []);
 
   const filteredStocksByMarket = Object.fromEntries(
   Object.entries(stocksByMarket).filter(([marketId]) =>
@@ -298,8 +255,7 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {/*hydrating && <div className="status-message">Loading your saved preferences...</div>*/}
-
+         
           <div className="market-selection">
             <h3>Preferred markets</h3>
             <div className="market-grid">

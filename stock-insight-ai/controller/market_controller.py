@@ -2,6 +2,7 @@ from services.commodities import get_global_commodities
 from services.forexMarket import get_global_forex
 from services.marketIndices import get_global_indices
 from services.marketSentiment import get_market_sentiment
+from services.global_events_news import get_global_news_feed as fetch_global_news_feed
 
 
 def get_commodities():
@@ -15,3 +16,7 @@ def get_indices():
 
 def get_sentiment():
     return get_market_sentiment()
+
+
+async def get_global_news_feed():
+    return await fetch_global_news_feed()

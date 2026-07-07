@@ -69,8 +69,9 @@ const loginUser = async (email, password) => {
             firstName: user.first_name,
             lastName: user.last_name,
             email: user.email,
-            onboarding_completed: Boolean(user.onboarding_completed),
-        },
+           onboarding_completed: Boolean(user.onboarding_completed)
+        }
+         
     };
 };
 

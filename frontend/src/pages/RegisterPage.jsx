@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser, registerUser } from "../api/userApi";
+import {  registerUser } from "../api/userApi";
 import PasswordStrengthIndicator from "../components/PasswordStrengthIndicator";
 import logoUrl from "../assets/logo.png";
 
@@ -72,16 +72,10 @@ export default function RegisterPage() {
         password: formData.password,
       };
 
-      await registerUser(payload);
-      const loginResult = await loginUser({
-        email: formData.email,
-        password: formData.password,
-      });
-
-      localStorage.setItem("token", loginResult.token);
-      localStorage.setItem("user", JSON.stringify(loginResult.user));
-      setMessage("Registration successful! Redirecting to onboarding...");
-      navigate("/questionnaire");
+      const response = await registerUser(payload);
+      localStorage.setItem("onboarding_completed", response.onboarding_completed);
+      setMessage("Registration successful! Redirecting to Login...");
+      navigate("/login");
     } catch (error) {
       setMessage(error.response?.data?.message || "Registration failed. Please try again.");
     } finally {

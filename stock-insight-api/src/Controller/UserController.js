@@ -15,14 +15,13 @@ const register = async (req, res) => {
             });
         }
 
-        const user = await userService.registerUser({
+        const data = await userService.registerUser({
             firstName,
             lastName,
             email,
             password
         });
-
-        res.status(201).json(user);
+        res.status(201).json(data);
     } catch (error) {
         res.status(400).json({
             message: error.message
@@ -80,8 +79,9 @@ const savePreferences = async (req, res) => {
                 stocks: stocks || {}
             }
         );
-
+         console.log('Preferences saved successfully:', preferences);
         return res.status(200).json(preferences);
+       
     } catch (error) {
         return res.status(400).json({
             message: error.message

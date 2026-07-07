@@ -14,6 +14,7 @@ export default function LoginForm() {
     try {
       const result = await loginUser({ email, password });
       localStorage.setItem("token", result.token);
+      localStorage.setItem("onboarding_completed", result.user.onboarding_completed);
       localStorage.setItem("user", JSON.stringify(result.user));
       setMessage("Login Successful");
       if (result.user?.onboarding_completed) {

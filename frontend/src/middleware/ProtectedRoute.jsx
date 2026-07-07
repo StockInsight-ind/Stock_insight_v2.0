@@ -7,5 +7,10 @@ export default function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
+  const onboardingCompleted = localStorage.getItem("onboarding_completed");
+    if (!onboardingCompleted) {
+        return <Navigate to="/questionnaire" replace />;
+    }
+
   return children;
 }

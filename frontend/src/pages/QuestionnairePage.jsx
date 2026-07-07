@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserPreferences, saveUserPreferences } from "../api/userApi";
+import {  saveUserPreferences } from "../api/userApi";
 import { searchStocks } from "../services/stockSearchService";
 
 const marketOptions = [
@@ -146,8 +146,7 @@ export default function QuestionnairePage() {
   const [stocksByMarket, setStocksByMarket] = useState({});
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hydrating, setHydrating] = useState(true);
-
+ 
 
   const filteredStocksByMarket = Object.fromEntries(
   Object.entries(stocksByMarket).filter(([marketId]) =>

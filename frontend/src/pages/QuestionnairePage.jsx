@@ -148,49 +148,49 @@ export default function QuestionnairePage() {
   const [loading, setLoading] = useState(false);
   const [hydrating, setHydrating] = useState(true);
 
-  useEffect(() => {
-    let active = true;
+  // useEffect(() => {
+  //   let active = true;
 
-    const hydratePreferences = async () => {
-      const token = localStorage.getItem("token");
+  //   const hydratePreferences = async () => {
+  //     const token = localStorage.getItem("token");
 
-      if (!token) {
-        setMessage("Please log in to continue onboarding.");
-        setHydrating(false);
-        navigate("/login");
-        return;
-      }
+  //     if (!token) {
+  //       setMessage("Please log in to continue onboarding.");
+  //       setHydrating(false);
+  //       navigate("/login");
+  //       return;
+  //     }
 
-      try {
-        const preferences = await getUserPreferences();
+  //     try {
+  //       const preferences = await getUserPreferences();
 
-        if (!active || !preferences) {
-          return;
-        }
+  //       if (!active || !preferences) {
+  //         return;
+  //       }
 
-        const savedMarkets = Array.isArray(preferences.markets)
-          ? preferences.markets.filter((marketId) => marketOptions.some((option) => option.id === marketId))
-          : [];
+  //       const savedMarkets = Array.isArray(preferences.markets)
+  //         ? preferences.markets.filter((marketId) => marketOptions.some((option) => option.id === marketId))
+  //         : [];
 
-        setSelectedMarkets(savedMarkets);
-        setStocksByMarket(preferences.stocks || {});
-      } catch (error) {
-        if (active && error.response?.status !== 401) {
-          setMessage(error.response?.data?.message || "Unable to load your saved preferences.");
-        }
-      } finally {
-        if (active) {
-          setHydrating(false);
-        }
-      }
-    };
+  //       setSelectedMarkets(savedMarkets);
+  //       setStocksByMarket(preferences.stocks || {});
+  //     } catch (error) {
+  //       if (active && error.response?.status !== 401) {
+  //         setMessage(error.response?.data?.message || "Unable to load your saved preferences.");
+  //       }
+  //     } finally {
+  //       if (active) {
+  //         setHydrating(false);
+  //       }
+  //     }
+  //   };
 
-    hydratePreferences();
+  //   hydratePreferences();
 
-    return () => {
-      active = false;
-    };
-  }, []);
+  //   return () => {
+  //     active = false;
+  //   };
+  // }, []);
 
   const filteredStocksByMarket = Object.fromEntries(
   Object.entries(stocksByMarket).filter(([marketId]) =>
@@ -249,7 +249,9 @@ export default function QuestionnairePage() {
     setLoading(true);
 
     try {
-      await saveUserPreferences(payload);
+      const result = await saveUserPreferences(payload);
+      console.log("Preferences saved successfully:", result);
+      localStorage.setItem("onboarding_completed", result.user.onboarding_completed);
       navigate("/dashboard");
     } catch (error) {
       setMessage(error.response?.data?.message || "Unable to save preferences.");
@@ -296,7 +298,7 @@ export default function QuestionnairePage() {
             </div>
           )}
 
-          {hydrating && <div className="status-message">Loading your saved preferences...</div>}
+          {/*hydrating && <div className="status-message">Loading your saved preferences...</div>*/}
 
           <div className="market-selection">
             <h3>Preferred markets</h3>
@@ -349,7 +351,7 @@ export default function QuestionnairePage() {
             <span>We only save verified symbols from the stock search API.</span>
           </div>
 
-          <button type="submit" className="submit-button" disabled={loading || hydrating}>
+          <button type="submit" className="submit-button" disabled={loading }>
             {loading ? "Saving preferences..." : "Save and continue"}
           </button>
         </form>

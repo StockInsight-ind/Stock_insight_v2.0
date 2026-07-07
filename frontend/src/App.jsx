@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import QuestionnairePage from "./pages/QuestionnairePage";
 import DashboardPage from "./pages/DashboardPage";
+import OnboardingRoute from "./middleware/OnboardingRoute";
 
 
 
@@ -12,37 +13,46 @@ import DashboardPage from "./pages/DashboardPage";
 import NewsAnalysis from "./pages/NewsAnalysis";
 import GlobalNews from "./pages/GlobalNews";
 import Settings from "./pages/Settings";
+import ProtectedRoute from "./middleware/ProtectedRoute";
 
 
 
 function App() {
   return (
-    <BrowserRouter>
-      {/* <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/questionnaire" element={<QuestionnairePage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<LandingPage />} />
-      </Routes> */}
-
-
-{/* routes made by ap */}
-
-      <Routes>
+   <BrowserRouter>
+  <Routes>
   <Route path="/" element={<LandingPage />} />
   <Route path="/login" element={<LoginPage />} />
   <Route path="/register" element={<RegisterPage />} />
-  <Route path="/questionnaire" element={<QuestionnairePage />} />
+  <Route path="/questionnaire" element={
+      <OnboardingRoute>
+        <QuestionnairePage />
+      </OnboardingRoute>
+    } />
 
-  <Route path="/dashboard" element={<DashboardPage />} />
-  <Route path="/news-analysis" element={<NewsAnalysis />} />
-  <Route path="/global-news" element={<GlobalNews />} />
-  <Route path="/settings" element={<Settings />} />
+  <Route path="/dashboard" element={
+      <ProtectedRoute>
+        <DashboardPage />
+      </ProtectedRoute>
+    } />
+  <Route path="/news-analysis" element={
+      <ProtectedRoute>
+        <NewsAnalysis />
+      </ProtectedRoute>
+    } />
+  <Route path="/global-news" element={
+      <ProtectedRoute>
+        <GlobalNews />
+      </ProtectedRoute>
+    } />
+  <Route path="/settings" element={
+      <ProtectedRoute>
+        <Settings />
+      </ProtectedRoute>
+    } />
 
   <Route path="*" element={<LandingPage />} />
-</Routes>
+  </Routes>
     </BrowserRouter>
   );
 }

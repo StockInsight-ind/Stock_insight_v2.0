@@ -1,4 +1,4 @@
-import "./App.css";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
@@ -15,7 +15,7 @@ import GlobalNews from "./pages/GlobalNews";
 import Settings from "./pages/Settings";
 import ProtectedRoute from "./middleware/ProtectedRoute";
 
-
+ 
 
 function App() {
   return (

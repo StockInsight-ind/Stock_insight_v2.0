@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Dict, List
 
-from config.settings import MAX_NEWS_AGE_HOURS
+from data.settings import MAX_NEWS_AGE_HOURS
 
 
 class DateFilter:

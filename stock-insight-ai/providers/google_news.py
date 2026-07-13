@@ -6,7 +6,7 @@ Google News RSS Provider
 
 from urllib.parse import quote_plus
 
-from config.rss_sources import GOOGLE_NEWS
+from data.rss_sources import GOOGLE_NEWS
 
 
 class GoogleNewsProvider:

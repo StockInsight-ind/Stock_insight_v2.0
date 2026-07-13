@@ -24,7 +24,7 @@ from typing import List, Dict
 import feedparser
 import requests
 
-from config.settings import (
+from data.settings import (
     HTTP_TIMEOUT,
     USER_AGENT,
 )

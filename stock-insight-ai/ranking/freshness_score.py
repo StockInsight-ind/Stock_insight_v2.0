@@ -43,7 +43,7 @@ from typing import Dict
 
 
 #as freshnes score is their in config/news_weights.py file code
-from config.news_weights import (
+from data.news_weights import (
     FRESHNESS_SCORES,
 )
 

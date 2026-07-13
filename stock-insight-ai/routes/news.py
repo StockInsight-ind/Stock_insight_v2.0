@@ -1,12 +1,5 @@
-
-from services.news_service import news_service
-
-
-
-
-
 from fastapi import APIRouter, Query
-
+from controller.news_controller import get_user_news
 
 router = APIRouter(
     prefix="/news",
@@ -21,7 +14,7 @@ def get_news(
     market: str = Query("USA"),
     symbol: str = Query("AAPL")
 ):
-    return news_service.get_news(
+    return get_user_news(
         market=market,
         symbol=symbol,
     )

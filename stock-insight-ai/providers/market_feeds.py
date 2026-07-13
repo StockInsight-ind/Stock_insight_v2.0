@@ -4,7 +4,7 @@ market_feeds.py
 Static market RSS feeds.
 """
 
-from config.rss_sources import RSS_SOURCES
+from data.rss_sources import RSS_SOURCES
 
 
 class MarketFeedProvider:

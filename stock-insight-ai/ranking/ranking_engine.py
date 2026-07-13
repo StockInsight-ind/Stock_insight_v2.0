@@ -28,7 +28,7 @@ No RSS fetching.
 
 from typing import Dict, List
 
-from config.news_weights import (
+from data.news_weights import (
     RANKING_WEIGHTS,
     ARTICLE_LIMITS,
 )

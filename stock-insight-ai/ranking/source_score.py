@@ -23,7 +23,7 @@ No freshness scoring.
 
 from typing import Dict
 
-from config.news_weights import (
+from data.news_weights import (
     SOURCE_SCORES,
 )
 

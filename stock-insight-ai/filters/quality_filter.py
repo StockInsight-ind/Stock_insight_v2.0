@@ -161,8 +161,8 @@ Only removes obviously broken or spam articles.
 
 from typing import Dict, List
 
-from config.news_weights import get_source_score
-from config.keywords import SPAM_KEYWORDS
+from data.news_weights import get_source_score
+from data.keywords import SPAM_KEYWORDS
 
 
 class QualityFilter:

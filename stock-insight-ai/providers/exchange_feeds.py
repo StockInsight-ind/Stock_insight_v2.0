@@ -4,7 +4,7 @@ exchange_feeds.py
 Official exchange announcement feeds.
 """
 
-from config.rss_sources import EXCHANGES
+from data.rss_sources import EXCHANGES
 
 
 class ExchangeFeedProvider:

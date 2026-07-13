@@ -41,7 +41,7 @@ No ranking.
 
 from typing import Dict
 
-from config.news_weights import (
+from data.news_weights import (
     IMPACT_SCORES,
 )
 

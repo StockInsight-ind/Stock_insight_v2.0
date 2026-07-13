@@ -16,7 +16,7 @@ No company matching.
 from difflib import SequenceMatcher
 from typing import Dict, List
 
-from config.settings import (
+from data.settings import (
     TITLE_SIMILARITY_THRESHOLD,
     SUMMARY_SIMILARITY_THRESHOLD,
 )

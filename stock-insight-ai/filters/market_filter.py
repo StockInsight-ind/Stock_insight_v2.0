@@ -22,7 +22,7 @@ No ranking.
 
 from typing import Dict, List
 
-from config.markets import MARKETS
+from data.markets import MARKETS
 
 
 class MarketFilter:

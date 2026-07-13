@@ -4,7 +4,7 @@ yahoo_finance.py
 Yahoo Finance RSS Provider
 """
 
-from config.rss_sources import YAHOO_FINANCE
+from data.rss_sources import YAHOO_FINANCE
 
 
 class YahooFinanceProvider:

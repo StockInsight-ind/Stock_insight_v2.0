@@ -48,8 +48,11 @@ services:
       - ./stock-insight-ai:/app
     ports:
       - "8000:8000"
+    # environment:
+    #   - PYTHONUNBUFFERED=1
     environment:
-      - PYTHONUNBUFFERED=1
+    - PYTHONUNBUFFERED=1
+    - PYTHONPATH=/app/news_engine
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   postgres:
     image: postgres:16
